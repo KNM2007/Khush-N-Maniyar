@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chain Reaction</title>
+         <link rel = "stylesheet" href="style.css">
+
+         <link href = "https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <div class="Game">
+            <div class="content">
+                <img src="title.png" alt="Chain Reaction" class="title-img">
+            <div class="inputs">
+                <input type="number" id="height" placeholder="Enter Height">
+                <input type="number" id="width" placeholder="Enter Width">
+            </div>
+            <div class="mode-select">
+                <button class="mode-btn" data-mode="multiplayer">Multiplayer</button>
+                <button class="mode-btn active" data-mode="computer">Computer</button>
+            </div>
+            <div id="player-options">
+                <p>Select Players:</p>
+                <button class="player-btn active" data-players="2">2</button>
+                <button class="player-btn" data-players="3">3</button>
+                <button class="player-btn" data-players="4">4</button>
+            </div>
+            <button onclick="startGame()"> Start </button>
+            </div>
+            <p id="Error" style="color: red;"> </p>
+        </div>
+    <script src="task.js"></script>
+    </body>
+</html>
