@@ -134,10 +134,8 @@ function addBall(row, col, color) {
     updateScoreboard()
     if (cell.count >= getCriticalMass(row, col)) {
         explode(row, col, color);
-        checkWinner();
-    } else {
-        checkWinner();
     }
+
 }
 
 function getCriticalMass(row, col) {
@@ -286,36 +284,11 @@ function computerMove() {
     if (gameOver) {
         return;
     }
+
     const computerColor = colors[currentPlayer];
     let bestMove = null;
     let bestScore = -Infinity;
 
-    function evaluateBoard() {
-        let score = 0;
-        for (let i = 0; i < height; i++) {
-            for (let j = 0; j < width; j++) {
-                const cell = board[i][j];
-
-                if (cell.owner === computerColor) {
-                    score += cell.count * 20 + 10;
-                    if (
-                        cell.count === getCriticalMass(i, j) - 1
-                    ) {
-                        score += 100;
-                    }
-                } else if (cell.owner !== "") {
-                    score -= cell.count * 20 + 10;
-                    if (
-                        cell.count === getCriticalMass(i, j) - 1
-                    ) {
-                        score -= 100;
-                    }
-                }
-            }
-        }
-
-        return score;
-    }
     function cloneBoard() {
         return board.map(row =>
             row.map(cell => ({
@@ -324,23 +297,28 @@ function computerMove() {
             }))
         );
     }
+
     function simulateMove(testBoard, row, col, color) {
         function add(r, c) {
             const cell = testBoard[r][c];
             cell.owner = color;
             cell.count++;
+
             if (cell.count >= getCriticalMass(r, c)) {
                 cell.owner = "";
                 cell.count = 0;
+
                 const directions = [
                     [-1, 0],
                     [1, 0],
                     [0, -1],
                     [0, 1]
                 ];
+
                 for (const [dr, dc] of directions) {
                     const nr = r + dr;
                     const nc = c + dc;
+
                     if (
                         nr >= 0 && nr < height &&
                         nc >= 0 && nc < width
@@ -350,15 +328,19 @@ function computerMove() {
                 }
             }
         }
+
         add(row, col);
     }
     function evaluateTestBoard(testBoard) {
         let score = 0;
+
         for (let i = 0; i < height; i++) {
             for (let j = 0; j < width; j++) {
                 const cell = testBoard[i][j];
+
                 if (cell.owner === computerColor) {
                     score += cell.count * 20 + 10;
+
                     if (
                         cell.count === getCriticalMass(i, j) - 1
                     ) {
@@ -366,6 +348,7 @@ function computerMove() {
                     }
                 } else if (cell.owner !== "") {
                     score -= cell.count * 20 + 10;
+
                     if (
                         cell.count === getCriticalMass(i, j) - 1
                     ) {
@@ -374,31 +357,37 @@ function computerMove() {
                 }
             }
         }
+
         return score;
     }
     for (let i = 0; i < height; i++) {
         for (let j = 0; j < width; j++) {
             const cell = board[i][j];
-
             if (
                 cell.owner !== "" &&
                 cell.owner !== computerColor
             ) {
                 continue;
             }
+
             const testBoard = cloneBoard();
             simulateMove(testBoard, i, j, computerColor);
+
             let score = evaluateTestBoard(testBoard);
+
             if (cell.owner === computerColor) {
-                score += 5;
+                score += 30;
             }
+
             if (score > bestScore) {
                 bestScore = score;
-                bestMove = { row: i, col: j };
+                bestMove = {
+                    row: i,
+                    col: j
+                };
             }
         }
     }
-
     if (!bestMove) {
         return;
     }
@@ -407,9 +396,13 @@ function computerMove() {
     if (!gameOver) {
         const alivePlayers = getAlivePlayers();
         let nextIndex = currentPlayer;
+
         do {
             nextIndex = (nextIndex + 1) % colors.length;
-        } while (!alivePlayers.includes(colors[nextIndex]));
+        } while (
+            !alivePlayers.includes(colors[nextIndex])
+        );
+
         currentPlayer = nextIndex;
     }
 }
