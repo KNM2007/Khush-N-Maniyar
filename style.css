@@ -231,7 +231,33 @@ body {
         border-color 0.2s ease,
         background 0.2s ease;
 }
-
+.cell.last-move {
+    animation: lastMoveGlow 0.8s ease;
+    border-color: #ffffff;
+    box-shadow:
+        0 0 10px currentColor,
+        0 0 20px currentColor,
+        0 0 35px currentColor;
+}
+@keyframes lastMoveGlow {
+    0% {
+        transform: scale(1);
+        box-shadow:
+            0 0 0 currentColor;
+    }
+    50% {
+        transform: scale(1.08);
+        box-shadow:
+            0 0 12px currentColor,
+            0 0 24px currentColor,
+            0 0 40px currentColor;
+    }
+    100% {
+        transform: scale(1);
+        box-shadow:
+            0 0 0 currentColor;
+    }
+}
 .cell:hover {
     background: rgba(255,255,255,0.28);
     border-color: rgba(255,255,255,0.6);
