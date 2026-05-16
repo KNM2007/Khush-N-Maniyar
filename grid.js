@@ -4,6 +4,8 @@ ballSound.volume = 0.99;
 const wrongClickSound = new Audio("wrong-click.mp3");
 wrongClickSound.volume = 0.99;
 wrongClickSound.preload = "auto";
+const explosionSound = new Audio("seperating.mp3");
+explosionSound.volume = 0.99;
 const height = Number(localStorage.getItem("height"));
 const width = Number(localStorage.getItem("width"));
 
@@ -78,7 +80,8 @@ for (let i = 0; i < height; i++) {
                     do {
                         nextIndex = (nextIndex + 1) % colors.length;
                     } while (!alivePlayers.includes(colors[nextIndex]))
-                    currentPlayer = nextIndex;         
+                    currentPlayer = nextIndex;
+                    updateTurnIndicator();         
                 }
                 if (mode === "computer" && !gameOver && currentPlayer === 1) {
                     setTimeout(() => {
@@ -118,6 +121,15 @@ function getAlivePlayers() {
     }
     return alive;
 }
+function getPlayerName(color) {
+    const names = {
+        "#ff4d6d": "Red Player",
+        "#4d7cff": mode === "computer" ? "Computer" : "Blue Player",
+        "#38d39f": "Green Player",
+        "#ffc857": "Yellow Player"
+    };
+    return names[color];
+}
 function addBall(row, col, color) {
     ballSound.currentTime = 0;
     ballSound.play().catch(() => {});
@@ -132,12 +144,11 @@ function addBall(row, col, color) {
     scores[color] += 10;
     updateCell(row, col);
     updateScoreboard()
+    updateTurnIndicator();
     if (cell.count >= getCriticalMass(row, col)) {
         explode(row, col, color);
     }
-
 }
-
 function getCriticalMass(row, col) {
     let neighbors = 0;
     if (row > 0) neighbors++;
@@ -147,6 +158,8 @@ function getCriticalMass(row, col) {
     return neighbors;
 }
 function explode(row, col, color) {
+    explosionSound.currentTime = 0;
+    explosionSound.play().catch(() => {});
     const cell = board[row][col];
     if (cell.owner !== "") {
         scores[cell.owner] -= cell.count * 10;
@@ -238,6 +251,15 @@ function updateScoreboard() {
         scoreboard.appendChild(item);
     }
 }
+function updateTurnIndicator() {
+    const indicator = document.getElementById("turn-indicator");
+    if (!indicator) {
+        return;
+    }
+    indicator.textContent =
+        `${getPlayerName(colors[currentPlayer])}'s Turn`;
+    indicator.style.color = colors[currentPlayer];
+}
 function checkWinner() {
     const owners = new Set();
     for (let i = 0; i < height; i++) {
@@ -274,10 +296,12 @@ function checkWinner() {
             winnerName = "Yellow Player";
         }
         winnerSound.play();
+        const wins = Number(localStorage.getItem(winnerName) || 0);
+        localStorage.setItem(winnerName, wins + 1);
         setTimeout(() => {
             alert(`Game Over! ${winnerName} wins!`);
             window.location.href = "index.html";
-        }, 90);
+        }, 300);
     }
 }
 function computerMove() {
@@ -369,16 +393,13 @@ function computerMove() {
             ) {
                 continue;
             }
-
             const testBoard = cloneBoard();
             simulateMove(testBoard, i, j, computerColor);
-
             let score = evaluateTestBoard(testBoard);
-
+            score += Math.random() * 20;
             if (cell.owner === computerColor) {
-                score += 30;
+                score += 15;
             }
-
             if (score > bestScore) {
                 bestScore = score;
                 bestMove = {
@@ -396,13 +417,16 @@ function computerMove() {
     if (!gameOver) {
         const alivePlayers = getAlivePlayers();
         let nextIndex = currentPlayer;
-
         do {
             nextIndex = (nextIndex + 1) % colors.length;
         } while (
             !alivePlayers.includes(colors[nextIndex])
         );
-
         currentPlayer = nextIndex;
+        updateTurnIndicator();
     }
 }
+window.addEventListener("load", () => {
+    updateScoreboard();
+    updateTurnIndicator();
+});
