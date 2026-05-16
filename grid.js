@@ -155,8 +155,11 @@ function highlightLastMove(row, col, color) {
         cell.classList.remove("last-move");
         cell.style.color = "";
     });
+
     const cellElement = cellElements[row][col];
+
     cellElement.style.color = color;
+
     void cellElement.offsetWidth;
     cellElement.classList.add("last-move");
 }
@@ -169,8 +172,9 @@ function getCriticalMass(row, col) {
     return neighbors;
 }
 function explode(row, col, color) {
-    if (!gameOver) {
-        playExplosionSound();
+    if (!gameOver) { 
+        explosionSound.currentTime = 0;
+        explosionSound.play().catch(() => {});
     }
     const cell = board[row][col];
     if (cell.owner !== "") {
