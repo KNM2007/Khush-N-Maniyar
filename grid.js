@@ -143,11 +143,22 @@ function addBall(row, col, color) {
     cell.count++;
     scores[color] += 10;
     updateCell(row, col);
+    highlightLastMove(row, col, color);
     updateScoreboard()
     updateTurnIndicator();
     if (cell.count >= getCriticalMass(row, col)) {
         explode(row, col, color);
     }
+}
+function highlightLastMove(row, col, color) {
+    document.querySelectorAll(".cell").forEach(cell => {
+        cell.classList.remove("last-move");
+        cell.style.color = "";
+    });
+    const cellElement = cellElements[row][col];
+    cellElement.style.color = color;
+    void cellElement.offsetWidth;
+    cellElement.classList.add("last-move");
 }
 function getCriticalMass(row, col) {
     let neighbors = 0;
