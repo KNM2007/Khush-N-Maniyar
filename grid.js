@@ -158,8 +158,9 @@ function getCriticalMass(row, col) {
     return neighbors;
 }
 function explode(row, col, color) {
-    explosionSound.currentTime = 0;
-    explosionSound.play().catch(() => {});
+    if (!gameOver) {
+        playExplosionSound();
+    }
     const cell = board[row][col];
     if (cell.owner !== "") {
         scores[cell.owner] -= cell.count * 10;
